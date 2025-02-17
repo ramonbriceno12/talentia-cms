@@ -7,11 +7,11 @@ Chart.register(...registerables);
 
 export default function LineChart({ data }: { data: any }) {
     const chartData = {
-        labels: ["Talents", "Proposals", "Companies", "Jobs"],
+        labels: ["Talents", "Approved Talents", "Proposals", "Companies", "Jobs"],
         datasets: [
             {
                 label: "New Entries",
-                data: [data.talents, data.proposals, data.companies, data.jobs],
+                data: [data.talents, data.approvedTalents, data.proposals, data.companies, data.jobs],
                 borderColor: "#244c56",
                 backgroundColor: "rgba(36, 76, 86, 0.2)",
                 fill: true,

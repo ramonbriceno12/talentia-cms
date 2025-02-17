@@ -11,16 +11,26 @@ import LinksDashboard from "./components/links/Links";
 const LineChart = dynamic(() => import("./components/charts/LineChart"), { ssr: false });
 
 export default function Dashboard() {
-    const [selectedRange, setSelectedRange] = useState<string>("7days");
+    const [selectedRange, setSelectedRange] = useState<string>("day"); // ✅ Default to Today
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
     const [showCustomPicker, setShowCustomPicker] = useState(false);
     const [stats, setStats] = useState({
         talents: 0,
+        approvedTalents: 0,
         proposals: 0,
         companies: 0,
         jobs: 0,
     });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    // ✅ Set default date to today on mount
+    useEffect(() => {
+        const today = dayjs().startOf("day").toDate();
+        setStartDate(today);
+        setEndDate(today);
+    }, []);
 
     // Handle Date Selection
     const handleDateRange = (range: string) => {
@@ -62,18 +72,43 @@ export default function Dashboard() {
         setEndDate(end);
     };
 
-    // Simulate fetching data
+    // Fetch data from backend
     useEffect(() => {
-        generateRandomData();
+        if (startDate && endDate) {
+            fetchDashboardStats();
+        }
     }, [startDate, endDate]);
 
-    const generateRandomData = () => {
-        setStats({
-            talents: Math.floor(Math.random() * 100),
-            proposals: Math.floor(Math.random() * 100),
-            companies: Math.floor(Math.random() * 50),
-            jobs: Math.floor(Math.random() * 70),
-        });
+    const fetchDashboardStats = async () => {
+        setLoading(true);
+        setError("");
+
+        try {
+            const response = await fetch(
+                `https://admin.talentiave.com/api/api/dashboard/stats?startDate=${startDate?.toISOString()}&endDate=${endDate?.toISOString()}`,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                }
+            );
+
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || "Failed to load dashboard stats");
+
+            setStats({
+                talents: data.talents,
+                approvedTalents: data.approvedTalents,
+                proposals: data.proposals,
+                companies: data.companies,
+                jobs: data.jobs,
+            });
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -129,13 +164,19 @@ export default function Dashboard() {
                 </div>
             )}
 
+            {loading && <p>Loading dashboard data...</p>}
+            {error && <p className="text-red-500">{error}</p>}
+
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <StatCard title="New Talents" value={stats.talents} />
-                <StatCard title="New Proposals" value={stats.proposals} />
-                <StatCard title="New Companies" value={stats.companies} />
-                <StatCard title="New Job Offers" value={stats.jobs} />
-            </div>
+            {!loading && !error && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <StatCard title="New Talents" value={stats.talents} />
+                    <StatCard title="Approved Talents" value={stats.approvedTalents} />
+                    <StatCard title="New Proposals" value={stats.proposals} />
+                    <StatCard title="New Companies" value={stats.companies} />
+                    <StatCard title="New Job Offers" value={stats.jobs} />
+                </div>
+            )}
 
             {/* Charts */}
             <div className="mt-8 mb-6">
@@ -143,10 +184,7 @@ export default function Dashboard() {
             </div>
 
             {/* Links Performance */}
-            <div className="mb-6">
-                <LinksDashboard />
-            </div>
-
+            <LinksDashboard />
         </div>
     );
 }
