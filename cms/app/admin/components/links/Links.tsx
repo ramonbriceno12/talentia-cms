@@ -32,7 +32,7 @@ export default function LinksDashboard() {
     const fetchLinks = async () => {
         setLoading(true);
         try {
-            let url = "http://localhost:5000/api/links";
+            let url = "https://admin.talentiave.com/api/api/links";
             if (startDate && endDate) {
                 url += `?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`;
             }

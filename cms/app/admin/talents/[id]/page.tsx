@@ -55,7 +55,7 @@ export default function TalentDetailPage() {
         setLoading(true);
         try {
             console.log("Fetching talent...");
-            const data = await authFetch(`http://localhost:5000/api/talents/${id}`);
+            const data = await authFetch(`https://admin.talentiave.com/api/api/talents/${id}`);
 
             if (data) {
                 console.log("Talent data received:", data);
@@ -81,7 +81,7 @@ export default function TalentDetailPage() {
     const fetchJobTitles = async () => {
         try {
             console.log("Fetching job titles...");
-            const data = await authFetch("http://localhost:5000/api/job-titles");
+            const data = await authFetch("https://admin.talentiave.com/api/api/job-titles");
             console.log("Job Titles Data:", data);
 
             if (Array.isArray(data)) {
@@ -99,7 +99,7 @@ export default function TalentDetailPage() {
     const fetchSkills = async () => {
         try {
             console.log("Fetching skills...");
-            const data = await authFetch("http://localhost:5000/api/skills");
+            const data = await authFetch("https://admin.talentiave.com/api/api/skills");
             console.log("Skills Data:", data);
 
             if (Array.isArray(data)) {
@@ -140,7 +140,7 @@ export default function TalentDetailPage() {
         setError("");
 
         try {
-            const response = await authFetch(`http://localhost:5000/api/talents/${id}`, {
+            const response = await authFetch(`https://admin.talentiave.com/api/api/talents/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

@@ -35,7 +35,7 @@ export default function TalentsPage() {
         try {
 
             const response = await fetch(
-                `http://localhost:5000/api/talents?search=${search}&page=${page}&limit=10`,
+                `https://admin.talentiave.com/api/api/talents?search=${search}&page=${page}&limit=10`,
                 {
                     headers: {
                         "Content-Type": "application/json",
@@ -62,7 +62,7 @@ export default function TalentsPage() {
         if (!confirm("Are you sure you want to deactivate this talent?")) return;
 
         try {
-            const response = await fetch(`http://localhost:5000/api/talents/deactivate/${id}`, {
+            const response = await fetch(`https://admin.talentiave.com/api/api/talents/deactivate/${id}`, {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`
@@ -88,7 +88,7 @@ export default function TalentsPage() {
         if (!confirm("Are you sure you want to activate this talent?")) return;
 
         try {
-            const response = await fetch(`http://localhost:5000/api/talents/activate/${id}`, {
+            const response = await fetch(`https://admin.talentiave.com/api/api/talents/activate/${id}`, {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`
